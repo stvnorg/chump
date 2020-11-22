@@ -21,7 +21,7 @@ def clone_and_deploy(git_url, branch, deploy_path):
 
         working_dir = git_url.split('/')[::-1][0]
         working_dir = working_dir.split('.')[0]
-        
+
         os.chdir(working_dir)
 
         args = ["git", "checkout", branch]
@@ -29,6 +29,9 @@ def clone_and_deploy(git_url, branch, deploy_path):
 
         args = ["cat", deploy_path]
         run(args, check=True)
+
+        args = ["kustomize", "build", deploy_path, "|", "kubectl", "apply", "-f", "-"]
+        run(args)
 
         args = ["rm", "-rf", os.path.join(os.getcwd(), working_dir)]
         run(args, check=True)
@@ -50,7 +53,7 @@ def check_code_update():
 
 def api_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('0.0.0.0', 9999))
+    server.bind(('127.0.0.1', 9999))
     server.listen(5)
 
     while True:
