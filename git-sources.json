@@ -1,16 +1,13 @@
 {
     "git-sources": [
         {
-            "name": "helloworld",
+            "namespace": "production",
+            "deployment_name": "helloworld",
             "git_url": "https://github.com/stvnorg/helloworld.git",
             "branch": "master",
-            "deploy_path": "./deploy/helloworld/deployment.yaml"
-        },
-        {
-            "name": "istio",
-            "git_url": "https://github.com/stvnorg/istio.git",
-            "branch": "master",
-            "deploy_path": "./gateway.yaml"
+            "deploy_path": "./deploy/helloworld/deployment.yaml",
+            "container_name": "helloworld",
+            "image_version_file": "./deploy/helloworld/deployment.yaml"
         }
     ]
 }

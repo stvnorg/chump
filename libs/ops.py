@@ -42,7 +42,9 @@ class Ops:
             if self.k8s.check_image_update(container_name, self.image_version):
                 args = "kustomize build {} | kubectl apply -f -".format(deploy_path)
                 self.logging.info(args)
-                #self.logging.info(os.system(args))
+                self.logging.info(os.system(args))
+            else:
+                self.logging.info("No new update!")
 
             os.chdir(root_dir)
             args = ["rm", "-rf", os.path.join(os.getcwd(), working_dir)]

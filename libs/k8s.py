@@ -14,7 +14,6 @@ class K8s:
 
         for deployment in self.deployment_metadata['spec']['template']['spec']['containers']:
             if deployment['name'] == container_name and deployment['image'] == image_version:
-                print("No new update!")
                 return False
 
         return True
