@@ -19,13 +19,19 @@ def check_code_update():
     while True:
         with open(git_sources, 'r') as file:
             sources = json.load(file)['git-sources']
+
             for source in sources:
+                namespace = source['namespace']
+                deployment_name = source['deployment_name']
                 git_url = source['git_url']
                 branch = source['branch']
                 deploy_path = source['deploy_path']
-                k8s = K8s()
+                container_name = source['container_name']
+                image_version_file = source['image_version_file']
+
+                k8s = K8s(namespace, deployment_name)
                 ops = Ops(logging, k8s)
-                ops.clone_and_deploy(git_url, branch, deploy_path)
+                ops.clone_and_deploy(git_url, branch, deploy_path, container_name, image_version_file)
         sleep(60)
     return 0
 

@@ -2,17 +2,22 @@ import json
 from kubernetes import client, config
 
 class K8s:
-    def __init__(self):
+    def __init__(self, namespace, deployment_name):
         config.load_kube_config()
         self.v1 = client.AppsV1Api()
+        self.namespace = namespace
+        self.deployment_name = deployment_name
 
-    def kustomize_deploy(self, namespace, deployment_name, image_name):
-        self.ret = self.v1.read_namespaced_deployment(deployment_name, namespace)
+    def check_image_update(self, container_name, image_version):
+        self.ret = self.v1.read_namespaced_deployment(self.deployment_name, self.namespace)
         self.deployment_metadata = json.loads(self.ret.metadata.annotations['kubectl.kubernetes.io/last-applied-configuration'])
 
         for deployment in self.deployment_metadata['spec']['template']['spec']['containers']:
-            if deployment['image'] == image_name:
-                print(image_name)
+            if deployment['name'] == container_name and deployment['image'] == image_version:
+                print("No new update!")
+                return False
+
+        return True
 
     def __str__(self):
-        return "k8s function to check the current deployment"
+        return "k8s class to check the current deployment"
