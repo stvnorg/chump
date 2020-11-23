@@ -14,6 +14,7 @@ logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO,
                         datefmt="%Y-%m-%d %H:%M:%S")
 
 git_sources = os.path.join(os.getcwd(), "git-sources.json")
+delay_time = 60
 
 def check_code_update():
     while True:
@@ -29,10 +30,10 @@ def check_code_update():
                 container_name = source['container_name']
                 image_version_file = source['image_version_file']
 
-                k8s = K8s(namespace, deployment_name)
-                ops = Ops(logging, k8s)
-                ops.clone_and_deploy(git_url, branch, deploy_path, container_name, image_version_file)
-        sleep(60)
+                k8s = K8s(namespace, deployment_name, container_name)
+                ops = Ops(logging, k8s, git_url, branch, deploy_path, container_name, image_version_file)
+                ops.clone_and_deploy()
+        sleep(delay_time)
     return 0
 
 def api_server():
