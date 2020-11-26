@@ -8,6 +8,8 @@ import threading
 from time import sleep
 from libs.k8s import *
 from libs.ops import *
+from flask import Flask
+app = Flask(__name__)
 
 LOGGING_FORMAT = "%(asctime)s: %(message)s"
 logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO,
@@ -36,27 +38,10 @@ def check_code_update():
         sleep(delay_time)
     return 0
 
-def api_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('127.0.0.1', 9999))
-    server.listen(5)
+check_git_status = threading.Thread(target=check_code_update)
+check_git_status.start()
 
-    while True:
-        conn, addr = server.accept()
-        from_client = ''
-        while True:
-            data = conn.recv(4096).decode()
-            if not data:
-                break
-            from_client += data
-            logging.info("Data from client: {}".format(from_client))
-            conn.send(b'I am SERVER<br>')
-        conn.close()
-        logging.info('client disconnected')
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
 
-if __name__ == "__main__":
-    check_git_status = threading.Thread(target=check_code_update)
-    listen_to_client = threading.Thread(target=api_server)
-
-    check_git_status.start()
-    listen_to_client.start()
