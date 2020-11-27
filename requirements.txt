@@ -1,4 +1,6 @@
 flask
 gunicorn
 kubernetes
+pika
 pyyaml
+rethinkdb

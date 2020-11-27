@@ -1,10 +1,10 @@
 import os
 import yaml
 from subprocess import run
+from flask import g
 
 class Ops:
-    def __init__(self, logging, k8s, git_url, branch, deploy_path, container_name, image_version_file):
-        self.logging = logging
+    def __init__(self, k8s, git_url, branch, deploy_path, container_name, image_version_file):
         self.k8s = k8s
         self.git_url = git_url
         self.branch = branch
@@ -37,12 +37,12 @@ class Ops:
             os.chdir(working_dir)
 
             args = ["git", "checkout", self.branch]
-            self.logging.info(run(args, check=True))
+            g.logging.info(run(args, check=True))
 
-            self.logging.info(self.k8s)
+            g.logging.info(self.k8s)
 
             self.image_version = self.get_image_version(self.container_name, self.image_version_file)
-            self.logging.info(self.image_version)
+            g.logging.info(self.image_version)
             '''
             if self.k8s.check_image_update(self.image_version):
                 args = "kustomize build {} | kubectl apply -f -".format(self.deploy_path)
@@ -53,7 +53,7 @@ class Ops:
             '''
             os.chdir(root_dir)
             args = ["rm", "-rf", os.path.join(root_dir, working_dir)]
-            self.logging.info(run(args, check=True))
+            g.logging.info(run(args, check=True))
 
         except Exception as exception_msg:
             raise exception_msg
