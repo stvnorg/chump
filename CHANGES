@@ -1,3 +1,7 @@
+0.2.1 (2020-11-29)
+------------------
+* Bug fix for the DB wrapper to return the json data
+
 0.2.0 (2020-11-29)
 ------------------
 * Implementing rethinkdb to store json data instead of json file

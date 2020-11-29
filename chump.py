@@ -36,15 +36,13 @@ def db_should_exist(func):
             func()
         except Exception as e:
             logging.info(e)
-            logging.info("Failed to create DB!")
+            logging.info("Failed to create DB or create Table!")
     return wrapper
 
 def check_code_update(g):
     while True:
         with open(git_sources, 'r') as file:
-            GetGitSources()
-            sources = json.load(file)['git-sources']
-
+            sources = GetGitSources()
             for source in sources:
                 namespace = source['namespace']
                 deployment_name = source['deployment_name']
