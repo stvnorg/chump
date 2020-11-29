@@ -1,4 +1,8 @@
-1.1.0 (2020-11-25)
+0.2.0 (2020-11-29)
 ------------------
+* Implementing rethinkdb to store json data instead of json file
+* Add function decorator for DB related
 
+0.1.0 (2020-11-25)
+------------------
 * Initial release, using flask for the REST-API
