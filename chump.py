@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
-import argparse
 import json
 import logging
-from multiprocessing import Process
 import os
-import socket
 import threading
 from time import sleep
 from libs.k8s import K8s
@@ -23,6 +20,23 @@ logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO,
 
 DELAY_TIME = 60
 git_sources = os.path.join(os.getcwd(), "git-sources.json")
+
+def db_setup(g):
+    with app.app_context():
+        g.logging = logging
+        DBSetup()
+        CreateTable()
+    return app
+
+def db_should_exist(func):
+    def wrapper():
+        try:
+            logging.info("Make sure the DB exist...")
+            db_setup(g)
+            func()
+        except:
+            logging.info("Failed to create DB!")
+    return wrapper
 
 def check_code_update(g):
     while True:
@@ -44,13 +58,7 @@ def check_code_update(g):
         sleep(DELAY_TIME)
     return app
 
-def db_setup(g):
-    with app.app_context():
-        g.logging = logging
-        DBSetup()
-        CreateTable()
-    return app
-
+@db_should_exist
 def run_app():
     with app.app_context():
         g.logging = logging
@@ -64,9 +72,4 @@ def hello_world():
     return 'Hello, World!'
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--setup', dest='run_setup', action='store_true')
-
-    args = parser.parse_args()
-    if args.run_setup:
-        db_setup(g)
+    run_app()
