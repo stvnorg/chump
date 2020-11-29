@@ -7,7 +7,7 @@ import threading
 from time import sleep
 from libs.k8s import K8s
 from libs.ops import Ops
-from libs.db import DBSetup, CreateTable
+from libs.db import DBSetup, CreateTable, GetGitSources
 from rethinkdb import RethinkDB
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 from flask import Flask, g
@@ -34,13 +34,15 @@ def db_should_exist(func):
             logging.info("Make sure the DB exist...")
             db_setup(g)
             func()
-        except:
+        except Exception as e:
+            logging.info(e)
             logging.info("Failed to create DB!")
     return wrapper
 
 def check_code_update(g):
     while True:
         with open(git_sources, 'r') as file:
+            GetGitSources()
             sources = json.load(file)['git-sources']
 
             for source in sources:
@@ -70,6 +72,3 @@ check_git_status.start()
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
-
-if __name__ == '__main__':
-    run_app()
