@@ -1,6 +1,8 @@
 import functools
 import os
 from .app_logging import use_logging
+from .custom_msg import custom_response_msg
+from .data_validation import source_already_exist
 from rethinkdb import RethinkDB
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 
@@ -49,20 +51,36 @@ def get_git_sources(conn, source_id=None):
 
 @db_conn(None)
 def add_git_source(conn, source_data):
+    add_source_success = "Add new source success!"
+    add_source_failed = "Add new source failed!"
+    duplicated_source = "Source already exist!"
+
     try:
-        r.table(TABLE_NAME).insert(source_data).run(conn)
-        msg = "Add new source success!"
-        logging.info(msg)
-        return { "mgs": msg }, 200
+        sources = [source for source in get_git_sources()]
+        if not len(sources):
+            source_data['id'] = len(sources) + 1
+            r.table(TABLE_NAME).insert(source_data).run(conn)
+            logging.info(add_source_success)
+            return custom_response_msg(add_source_success, 200)
+
+        for source in sources:
+            if not source_already_exist(source, source_data):
+                source_data['id'] = len(sources) + 1
+                r.table(TABLE_NAME).insert(source_data).run(conn)
+                logging.info(add_source_success)
+                return custom_response_msg(add_source_success, 200)
+            else:
+                logging.info(duplicated_source)
+                return custom_response_msg(duplicated_source, 200)
 
     except RqlRuntimeError:
-        msg = "Add new source failed!"
-        logging.info(msg)
-        return { "mgs": msg }, 500
+        logging.info(add_source_failed)
+        return custom_response_msg(add_source_failed, 500)
 
 @db_conn(None)
 def delete_git_source(conn, source_id):
     try:
         r.table(TABLE_NAME).get(source_id).delete().run(conn)
     except RqlRuntimeError:
-        logging.info("Delete failed!")
+        msg = "Deleting source failed!"
+        return custom_response_msg(msg, 500)
