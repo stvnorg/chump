@@ -7,7 +7,7 @@ import threading
 from time import sleep
 from libs.k8s import K8s
 from libs.ops import Ops
-from libs.db import DBSetup, CreateTable, GetGitSources
+from libs.db import db_setup, create_table, get_git_sources
 from rethinkdb import RethinkDB
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
 from flask import Flask
@@ -28,7 +28,7 @@ git_sources = os.path.join(os.getcwd(), "git-sources.json")
 def check_code_update():
     while True:
         with open(git_sources, 'r') as file:
-            sources = GetGitSources()
+            sources = get_git_sources()
             for source in sources:
                 namespace = source['namespace']
                 deployment_name = source['deployment_name']
@@ -45,8 +45,8 @@ def check_code_update():
     return app
 
 def run_app():
-    DBSetup()
-    CreateTable()
+    db_setup()
+    create_table()
     check_code_update()
 
 check_git_status = threading.Thread(target=run_app)
