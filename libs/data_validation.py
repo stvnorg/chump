@@ -19,7 +19,6 @@ def json_data_is_valid(data):
         if not data['image_version_file']: 
             return False
     except Exception as e:
-        logging.info("ERROR: JSON body data is invalid")
         return False
     
     return True
@@ -43,5 +42,4 @@ def source_already_exist(source, source_data):
     except Exception as e:
         return False
     
-    logging.info("ERROR: Source already exist, duplicated source")
     return True

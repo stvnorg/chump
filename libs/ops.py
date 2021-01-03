@@ -31,7 +31,7 @@ class Ops:
         try:
             root_dir = os.getcwd()
             args = ["git", "clone", self.git_url]
-            run(args, check=True)
+            logging.info(run(args, check=True))
 
             working_dir = self.git_url.split('/')[::-1][0]
             working_dir = working_dir.split('.')[0]

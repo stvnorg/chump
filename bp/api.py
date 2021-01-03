@@ -1,4 +1,4 @@
-from libs.db import add_git_source, delete_git_source, get_git_sources
+from libs.db import add_git_source, delete_git_source, get_git_sources, update_git_source
 from libs.custom_msg import custom_msg_dict, custom_response_msg
 from libs.data_validation import json_data_is_valid
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
@@ -34,7 +34,6 @@ def create():
                 return custom_response_msg(msg, 200)
 
         except Exception as e:
-            print(e)
             msg = "Internal server error"
             return custom_response_msg(msg, 500)
     else:
@@ -43,7 +42,21 @@ def create():
 
 @bp.route('/sources/<int:source_id>/update', methods=['PUT', 'PATCH'])
 def update(source_id):
-    return 'update'
+    if request.is_json:
+        try:
+            req = request.get_json()
+            if json_data_is_valid(req):
+                return update_git_source(source_id, req)
+            else:
+                msg = "JSON body data is invalid"
+                return custom_response_msg(msg, 200)
+        except Exception as e:
+            print(e)
+            msg = "Internal server error"
+            return custom_response_msg(msg, 500)
+    else:
+        msg = "Request body must be JSON data"
+        return custom_response_msg(msg, 400)
 
 @bp.route('/sources/<int:source_id>/delete', methods=['DELETE'])
 def delete(source_id):
