@@ -1,5 +1,5 @@
 from libs.db import add_git_source, delete_git_source, get_git_sources
-from libs.custom_msg import custom_response_msg
+from libs.custom_msg import custom_msg_dict, custom_response_msg
 from libs.data_validation import json_data_is_valid
 from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
 from werkzeug.exceptions import abort
@@ -16,10 +16,7 @@ def health():
 
 @bp.route('/sources/', methods=['GET'])
 def sources():
-    sources = []
-    for source in get_git_sources():
-        sources.append(source)
-    return { "sources": sources }
+    return { "sources": get_git_sources() }
 
 @bp.route('/sources/<int:source_id>/', methods=['GET'])
 def retrieve(source_id):
@@ -44,12 +41,11 @@ def create():
         msg = "Request body must be JSON data"
         return custom_response_msg(msg, 400)
 
-@bp.route('/sources/<int:source_id>/update', methods=['PUT'])
+@bp.route('/sources/<int:source_id>/update', methods=['PUT', 'PATCH'])
 def update(source_id):
     return 'update'
 
 @bp.route('/sources/<int:source_id>/delete', methods=['DELETE'])
 def delete(source_id):
-    delete_git_source(source_id)
-    msg = "source has been deleted"
-    return custom_response_msg(msg, 200)
+    return delete_git_source(source_id)
+    
