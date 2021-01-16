@@ -47,13 +47,18 @@ def get_git_sources(conn, source_id=None, source_data=None):
         source = r.table(TABLE_NAME).get(source_id).run(conn) or {}
         return source
     else:
-        sources = [source for source in r.table(TABLE_NAME).run(conn)]
+        sources = sorted([source for source in r.table(TABLE_NAME).run(conn)], key=lambda x: x['id'])
         return sources
 
 @db_conn()
 def add_git_source(conn, source_data, source_id=None):
     def add_new_source():
-        source_data['id'] = len(sources) + 1
+        sources_length = len(sources)
+        if sources_length == 0:
+            source_data['id'] = 1
+        else:
+            source_data['id'] = sources[sources_length-1]['id'] + 1
+
         r.table(TABLE_NAME).insert(source_data).run(conn)
         return custom_response_msg(custom_msg_dict['add_source_success'], 200)
 
@@ -62,11 +67,10 @@ def add_git_source(conn, source_data, source_id=None):
         if not len(sources):
             return add_new_source()
 
-        for source in sources:
-            if not source_already_exist(source, source_data):
-                return add_new_source()
-            else:
-                return custom_response_msg(custom_msg_dict['duplicated_source'], 200)
+        if source_already_exist(sources, source_data):
+            return custom_response_msg(custom_msg_dict['duplicated_source'], 200)
+        else:
+            return add_new_source()
 
     except RqlRuntimeError:
         return custom_response_msg(custom_msg_dict['add_source_failed'], 500)

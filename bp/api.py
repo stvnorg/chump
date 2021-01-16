@@ -34,7 +34,7 @@ def create():
                 return custom_response_msg(msg, 200)
 
         except Exception as e:
-            msg = "Internal server error"
+            msg = str(e)
             return custom_response_msg(msg, 500)
     else:
         msg = "Request body must be JSON data"
@@ -51,8 +51,7 @@ def update(source_id):
                 msg = "JSON body data is invalid"
                 return custom_response_msg(msg, 200)
         except Exception as e:
-            print(e)
-            msg = "Internal server error"
+            msg = str(e)
             return custom_response_msg(msg, 500)
     else:
         msg = "Request body must be JSON data"

@@ -58,4 +58,4 @@ class Ops:
             logging.info(run(args, check=True))
 
         except Exception as exception_msg:
-            raise exception_msg
+            logging.info(exception_msg)
