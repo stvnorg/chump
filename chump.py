@@ -7,12 +7,16 @@ import threading
 from time import sleep
 from libs.k8s import K8s
 from libs.ops import Ops
-from libs.db import DBSetup, CreateTable, GetGitSources
+from libs.db import db_setup, create_table, get_git_sources
 from rethinkdb import RethinkDB
 from rethinkdb.errors import RqlRuntimeError, RqlDriverError
-from flask import Flask, g
+from flask import Flask
+from bp import api, index
 
 app = Flask(__name__)
+
+app.register_blueprint(api.bp)
+app.register_blueprint(index.bp)
 
 LOGGING_FORMAT = "%(asctime)s: %(message)s"
 logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO,
@@ -21,28 +25,10 @@ logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO,
 DELAY_TIME = 60
 git_sources = os.path.join(os.getcwd(), "git-sources.json")
 
-def db_setup(g):
-    with app.app_context():
-        g.logging = logging
-        DBSetup()
-        CreateTable()
-    return app
-
-def db_should_exist(func):
-    def wrapper():
-        try:
-            logging.info("Make sure the DB exist...")
-            db_setup(g)
-            func()
-        except Exception as e:
-            logging.info(e)
-            logging.info("Failed to create DB or create Table!")
-    return wrapper
-
-def check_code_update(g):
+def check_code_update():
     while True:
         with open(git_sources, 'r') as file:
-            sources = GetGitSources()
+            sources = get_git_sources()
             for source in sources:
                 namespace = source['namespace']
                 deployment_name = source['deployment_name']
@@ -58,15 +44,10 @@ def check_code_update(g):
         sleep(DELAY_TIME)
     return app
 
-@db_should_exist
 def run_app():
-    with app.app_context():
-        g.logging = logging
-        check_code_update(g)
+    db_setup()
+    create_table()
+    check_code_update()
 
 check_git_status = threading.Thread(target=run_app)
 check_git_status.start()
-
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
