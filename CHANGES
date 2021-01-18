@@ -1,3 +1,9 @@
+0.2.2 (2021-01-17)
+------------------
+* Bug fix for the data_validation.py
+* Bug fix the libs/ops.py module (clean-up directory whether the k8s deployment file valid or not)
+* Bug fix for the add_git_source function (sorting the sources and fix the 'id' value assigment) 
+
 0.2.1 (2020-11-29)
 ------------------
 * Bug fix for the DB wrapper to return the json data

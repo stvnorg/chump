@@ -28,8 +28,8 @@ class Ops:
                         pass
 
     def clone_and_deploy(self):
+        root_dir = os.getcwd()
         try:
-            root_dir = os.getcwd()
             args = ["git", "clone", self.git_url]
             logging.info(run(args, check=True))
 
@@ -45,17 +45,25 @@ class Ops:
 
             self.image_version = self.get_image_version(self.container_name, self.image_version_file)
             logging.info(self.image_version)
-            '''
+            
             if self.k8s.check_image_update(self.image_version):
                 args = "kustomize build {} | kubectl apply -f -".format(self.deploy_path)
                 self.logging.info(args)
                 self.logging.info(os.system(args))
             else:
                 self.logging.info("No new update!")
-            '''
+            
             os.chdir(root_dir)
             args = ["rm", "-rf", os.path.join(root_dir, working_dir)]
             logging.info(run(args, check=True))
 
         except Exception as exception_msg:
             logging.info(exception_msg)
+
+            working_dir = self.git_url.split('/')[::-1][0]
+            working_dir = working_dir.split('.')[0]
+            os.chdir(root_dir)
+            args = ["rm", "-rf", os.path.join(root_dir, working_dir)]
+            logging.info(run(args, check=True))
+
+
