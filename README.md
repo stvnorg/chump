@@ -84,7 +84,7 @@ curl -X GET http://CHUMP_URL/api/sources/1
 
 #### Update a git source
 ```bash
-curl -i -X PATCH -H "Content-Type: application/json" http://CHUMP_URL/api/sources/create -d '{"namespace": "<NAMESPACE>", "deployment_name": "<DEPLOYMENT_NAME>", "git_url": "<GIT_URL>", "branch": "<GIT_BRANCH>", "deploy_path": "<KUSTOMIZE_DEPLOY_PATH>", "container_name": "<CONTAINER_NAME>", "image_version_file": "<KUSTOMIZE_FILE_WHERE_THE_IMAGE_VERSION_DECLARED"}'
+curl -i -X PATCH -H "Content-Type: application/json" http://CHUMP_URL/api/sources/<GIT_SOURCE_ID:integer>/update -d '{"namespace": "<NAMESPACE>", "deployment_name": "<DEPLOYMENT_NAME>", "git_url": "<GIT_URL>", "branch": "<GIT_BRANCH>", "deploy_path": "<KUSTOMIZE_DEPLOY_PATH>", "container_name": "<CONTAINER_NAME>", "image_version_file": "<KUSTOMIZE_FILE_WHERE_THE_IMAGE_VERSION_DECLARED"}'
 ```
 
 example:

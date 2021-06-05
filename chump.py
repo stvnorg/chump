@@ -22,7 +22,7 @@ LOGGING_FORMAT = "%(asctime)s: %(message)s"
 logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO,
                         datefmt="%Y-%m-%d %H:%M:%S")
 
-DELAY_TIME = 60
+DELAY_TIME = 180
 git_sources = os.path.join(os.getcwd(), "git-sources.json")
 
 def check_code_update():
