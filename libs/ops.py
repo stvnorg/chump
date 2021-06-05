@@ -13,6 +13,7 @@ class Ops:
         self.deploy_path = deploy_path
         self.container_name = container_name
         self.image_version_file = image_version_file
+        self.logging = logging
 
     def get_image_version(self, container_name, image_version_file):
         with open(image_version_file, 'r') as f:

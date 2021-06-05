@@ -10,11 +10,11 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 def api():
     return { "endpoints" : ["api/health", "api/sources"] }
 
-@bp.route('/health/', methods=['GET'])
+@bp.route('/health', methods=['GET'])
 def health():
     return { "status" : "healthy" }
 
-@bp.route('/sources/', methods=['GET'])
+@bp.route('/sources', methods=['GET'])
 def sources():
     return { "sources": get_git_sources() }
 
